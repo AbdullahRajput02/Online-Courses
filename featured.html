@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Featured Courses</title>
+    <link rel="stylesheet" href="courses.css">
+</head>
+<body>
+    <section class="featured-courses">
+        <h2>Featured Courses</h2>
+        <div class="courses-container">
+            <div class="course-card">
+                <img src="https://source.unsplash.com/400x300/?coding" alt="Course 1">
+                <div class="course-content">
+                    <h3>Introduction to Programming</h3>
+                    <p>Learn the basics of programming with Python.</p>
+                    <a href="#" class="btn-primary">Learn More</a>
+                </div>
+            </div>
+            <div class="course-card">
+                <img src="https://source.unsplash.com/400x300/?design" alt="Course 2">
+                <div class="course-content">
+                    <h3>Graphic Design Fundamentals</h3>
+                    <p>Master the essentials of graphic design and visual communication.</p>
+                    <a href="#" class="btn-primary">Learn More</a>
+                </div>
+            </div>
+            <div class="course-card">
+                <img src="https://source.unsplash.com/400x300/?marketing" alt="Course 3">
+                <div class="course-content">
+                    <h3>Digital Marketing 101</h3>
+                    <p>Explore the fundamentals of digital marketing and SEO.</p>
+                    <a href="#" class="btn-primary">Learn More</a>
+                </div>
+            </div>
+        </div>
+        <ul id="featuredCoursesList"></ul>
+    </section>
+
+    <script>
+            document.addEventListener('DOMContentLoaded', function() {
+    const featuredCourseList = document.getElementById('featuredCourseList');
+
+    function displayCourses() {
+        const courses = JSON.parse(localStorage.getItem('courses')) || [];
+
+        courses.forEach(course => {
+            const listItem = document.createElement('li');
+            listItem.innerHTML = `
+                <h3>${course.name}</h3>
+                <p>${course.description}</p>
+                <p><strong>Instructor:</strong> ${course.instructor}</p>
+                <img src="${course.image}" alt="${course.name}" style="width: 100%; max-width: 300px; height: auto;">
+            `;
+            featuredCourseList.appendChild(listItem);
+        });
+    }
+    displayCourses();
+});
+
+    </script>
+</body>
+</html>

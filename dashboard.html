@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <link rel="stylesheet" href="courses.css">
+</head>
+<body>
+    <div class="dashboard-container">
+        <aside class="sidebar">
+            <h2>Admin Dashboard</h2>
+            <ul>
+                <li><a href="#" id="addCourseLink">Add Course</a></li>
+                <li><a href="#" id="manageCoursesLink">Manage Courses</a></li>
+                <li><a href="#" id="analyticsLink">Analytics</a></li>
+                <li><a href="#" id="settingsLink">Settings</a></li>
+            </ul>
+        </aside>
+
+        <main class="main-content">
+            <section id="addCourseSection" class="section">
+                <h3>Add New Course</h3>
+                <form id="addCourseForm">
+                    <div class="input-group">
+                        <label for="courseName">Course Name</label>
+                        <input type="text" id="courseName" name="courseName" placeholder="Enter course name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="courseDescription">Course Description</label>
+                        <textarea id="courseDescription" name="courseDescription" placeholder="Enter course description" required></textarea>
+                    </div>
+                    <div class="input-group">
+                        <label for="courseInstructor">Instructor Name</label>
+                        <input type="text" id="courseInstructor" name="courseInstructor" placeholder="Enter instructor name" required>
+                    </div>
+                    <div class="input-group">
+                        <label for="courseImage">Course Image URL</label>
+                        <input type="url" id="courseImage" name="courseImage" placeholder="Enter course image URL" required>
+                    </div>
+                    <button type="submit" class="btn-primary">Add Course</button>
+                </form>
+            </section>
+
+            <section id="manageCoursesSection" class="section">
+                <h3>Manage Courses</h3>
+                <!-- This section will dynamically list the courses added -->
+                <ul id="courseList"></ul>
+            </section>
+
+            <section id="analyticsSection" class="section">
+                <h3>Analytics</h3>
+                <p>Analytics data will be displayed here.</p>
+            </section>
+
+            <section id="settingsSection" class="section">
+                <h3>Settings</h3>
+                <p>Settings options will be displayed here.</p>
+            </section>
+        </main>
+    </div>
+
+    <script>
+      
+
+
+      document.addEventListener('DOMContentLoaded', function() {
+    const addCourseForm = document.getElementById('addCourseForm');
+    const courseList = document.getElementById('courseList');
+    const sections = {
+        addCourseLink: document.getElementById('addCourseSection'),
+        manageCoursesLink: document.getElementById('manageCoursesSection'),
+        analyticsLink: document.getElementById('analyticsSection'),
+        settingsLink: document.getElementById('settingsSection'),
+    };
+
+    document.querySelector('.sidebar').addEventListener('click', function(e) {
+        if (sections[e.target.id]) {
+            Object.values(sections).forEach(section => section.classList.remove('active'));
+            sections[e.target.id].classList.add('active');
+        }
+    });
+
+    addCourseForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+
+        const courseName = document.getElementById('courseName').value;
+        const courseDescription = document.getElementById('courseDescription').value;
+        const courseInstructor = document.getElementById('courseInstructor').value;
+        const courseImage = document.getElementById('courseImage').value;
+
+        const course = {
+            name: courseName,
+            description: courseDescription,
+            instructor: courseInstructor,
+            image: courseImage,
+            videos: [],
+            quiz: null
+        };
+
+        // Save the course data to local storage
+        let courses = JSON.parse(localStorage.getItem('courses')) || [];
+        courses.push(course);
+        localStorage.setItem('courses', JSON.stringify(courses));
+
+        // Update the course list in the Manage Courses section
+        addCourseToList(course, courses.length - 1);
+
+        addCourseForm.reset();
+        alert('Course added successfully!');
+    });
+
+    function addCourseToList(course, index) {
+        const listItem = document.createElement('li');
+        listItem.innerHTML = `
+            <h4>${course.name}</h4>
+            <p>${course.description}</p>
+            <p><strong>Instructor:</strong> ${course.instructor}</p>
+            <img src="${course.image}" alt="${course.name}" style="width: 100%; max-width: 300px; height: auto;">
+            <button class="btn-primary edit-btn" data-index="${index}">Edit</button>
+            <button class="btn-primary delete-btn" data-index="${index}">Delete</button>
+        `;
+        courseList.appendChild(listItem);
+    }
+
+    // Load courses from local storage and display them in the Manage Courses section
+    const storedCourses = JSON.parse(localStorage.getItem('courses')) || [];
+    storedCourses.forEach((course, index) => addCourseToList(course, index));
+
+    // Event delegation for edit and delete buttons
+    courseList.addEventListener('click', function(event) {
+        if (event.target.classList.contains('edit-btn')) {
+            const index = event.target.getAttribute('data-index');
+            editCourse(index);
+        } else if (event.target.classList.contains('delete-btn')) {
+            const index = event.target.getAttribute('data-index');
+            deleteCourse(index);
+        }
+    });
+
+    function editCourse(index) {
+        const courses = JSON.parse(localStorage.getItem('courses')) || [];
+        const course = courses[index];
+        
+        const videoUrl = prompt("Enter video URL (leave blank to skip):");
+        const quiz = prompt("Enter quiz questions (leave blank to skip):");
+
+        if (videoUrl) {
+            course.videos.push(videoUrl);
+        }
+
+        if (quiz) {
+            course.quiz = quiz;
+        }
+
+        courses[index] = course;
+        localStorage.setItem('courses', JSON.stringify(courses));
+        alert('Course updated successfully!');
+    }
+
+    function deleteCourse(index) {
+        let courses = JSON.parse(localStorage.getItem('courses')) || [];
+        courses.splice(index, 1);
+        localStorage.setItem('courses', JSON.stringify(courses));
+        courseList.innerHTML = ''; // Clear the list
+        courses.forEach((course, idx) => addCourseToList(course, idx)); // Re-render the list
+        alert('Course deleted successfully!');
+    }
+
+    // Set the default section to be visible
+    sections.addCourseLink.classList.add('active');
+});
+
+
+
+    </script>
+</body>
+</html>
